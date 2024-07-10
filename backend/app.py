@@ -15,7 +15,7 @@ def read_item(item_id: int, q: str = None):
 
     :param item_id: int:
     :param q: str:  (Default value = None)
-    :param item_id: int: 
+    :param item_id: int:
     :param q: str:  (Default value = None)
 
     """
