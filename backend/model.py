@@ -8,7 +8,7 @@ def load_model(model_path):
     """Load the model from a given path.
 
     :param model_path: str
-    :returns: - model: The loaded YOLOv8 model.
+    :returns: model: The loaded YOLOv8 model.
 
     """
     model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path)
@@ -20,7 +20,7 @@ def make_prediction(model, image_path):
 
     :param model: The loaded YOLOv8 model
     :param image_path: str
-    :returns: - results: The prediction results.
+    :returns: results: The prediction results.
 
     """
     img = Image.open(image_path)
@@ -33,7 +33,7 @@ def draw_prediction_bb(image_path, results):
 
     :param image_path: str
     :param results: The prediction results from the model
-    :returns: - img: The image with bounding boxes drawn.
+    :returns: img: The image with bounding boxes drawn.
 
     """
     img = Image.open(image_path)
