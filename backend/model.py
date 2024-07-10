@@ -1,6 +1,5 @@
 import torch
-from PIL import Image
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 
 model_path = "model.pt"
 
