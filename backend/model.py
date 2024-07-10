@@ -1,7 +1,7 @@
 import torch
 from PIL import Image, ImageDraw
 
-model_path = 'model.pt'
+model_path = "model.pt"
 
 
 def load_model(model_path):
@@ -14,7 +14,7 @@ def load_model(model_path):
     Returns:
     - model: The loaded YOLOv8 model.
     """
-    model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path)
+    model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path)
     return model
 
 
@@ -50,5 +50,5 @@ def draw_prediction_bb(image_path, results):
     for *xyxy, conf, cls in results.xyxy[0]:
         label = results.names[int(cls)]
         draw.rectangle(xyxy, outline=(255, 0, 0), width=2)
-        draw.text((xyxy[0], xyxy[1]), f'{label} {conf:.2f}', fill=(255, 0, 0))
+        draw.text((xyxy[0], xyxy[1]), f"{label} {conf:.2f}", fill=(255, 0, 0))
     return img
