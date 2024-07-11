@@ -10,3 +10,14 @@ updates:
    directory: "/"
    schedule:
      interval: weekly
+
+version: 2
+updates:
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: weekly
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: weekly

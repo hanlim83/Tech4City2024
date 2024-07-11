@@ -1,32 +1,46 @@
 import torch
+from PIL import Image
+from PIL import ImageDraw
 
-# Function to load the custom pre-trained YOLOv5 model
-def load_custom_model(model_path):
-    # Load the custom model
-    model = torch.load(model_path)
-    # Ensure it's in evaluation mode
-    model.eval()
+model_path = "model.pt"
+
+
+def load_model(model_path):
+    """Load the model from a given path.
+
+    :param model_path: str
+    :returns: - model: The loaded YOLOv8 model.
+
+    """
+    model = torch.hub.load("ultralytics/yolov5", "custom", path=model_path)
     return model
 
-# Function to perform inference
-def perform_inference(model, image_path):
-    # Load an image
-    img = torch.zeros((1, 3, 640, 640))  # Example image tensor, replace with actual image loading code
-    # Perform inference
-    results = model(img)
-    # Process results, for example, print or plot them
-    results.print()
 
-# Example usage
-if __name__ == "__main__":
-    # Path to your custom trained model file
-    model_path = 'path/to/your/custom_model.pt'
-    
-    # Load the custom model
-    model = load_custom_model(model_path)
-    
-    # Path to your image
-    image_path = 'path/to/your/image.jpg'
-    
-    # Perform inference
-    perform_inference(model, image_path)
+def make_prediction(model, image_path):
+    """Make a prediction on a single image using the loaded model.
+
+    :param model: The loaded YOLOv8 model
+    :param image_path: str
+    :returns: - results: The prediction results.
+
+    """
+    img = Image.open(image_path)
+    results = model(img)
+    return results
+
+
+def draw_prediction_bb(image_path, results):
+    """Draw bounding boxes on the image based on the prediction results.
+
+    :param image_path: str
+    :param results: The prediction results from the model
+    :returns: - img: The image with bounding boxes drawn.
+
+    """
+    img = Image.open(image_path)
+    draw = ImageDraw.Draw(img)
+    for *xyxy, conf, cls in results.xyxy[0]:
+        label = results.names[int(cls)]
+        draw.rectangle(xyxy, outline=(255, 0, 0), width=2)
+        draw.text((xyxy[0], xyxy[1]), f"{label} {conf:.2f}", fill=(255, 0, 0))
+    return img
