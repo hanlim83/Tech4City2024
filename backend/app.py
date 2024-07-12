@@ -1,11 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
+import model
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 Base = declarative_base()
+
 
 class Upload(Base):
     __tablename__ = 'uploads'
@@ -13,6 +15,7 @@ class Upload(Base):
     filename = Column(String, nullable=False)
     uploadPath = Column(String, nullable=False)
     results = relationship("Result", back_populates="upload")
+
 
 class Result(Base):
     __tablename__ = 'results'
@@ -29,14 +32,32 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
+
 class Image(BaseModel):
     filename: str
     label: str
     recognition_result: str
 
+
 @app.on_event("startup")
 def startup():
     Base.metadata.create_all(bind=engine)
+
+
+@app.post("/process")
+async def process_image(file: UploadFile = File(...)):
+    try:
+        # Here you can save the file or process it
+        filename = file.filename
+        # For example, save the file to disk
+        with open(f"uploads/{filename}", "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        result = model.predict(f"uploads/{filename}")
+        # Return a response or processing result
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/getAllResults", status_code=200)
 def getAllResults():
@@ -46,6 +67,7 @@ def getAllResults():
         return [Image(filename=result.filename, label=result.label, recognition_result=result.recognition_result) for result in results]
     finally:
         db.close()
+
 
 @app.get("/test", status_code=200)
 def test():
