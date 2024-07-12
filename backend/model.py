@@ -4,6 +4,7 @@ annotated_image_directory = "annotated_images"
 # Load the custom YOLOv8 model
 model = YOLO("model.pt")
 
+
 def predict(image_path):
     # Perform inference on the image
     results = model(image_path)
