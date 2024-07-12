@@ -11,6 +11,7 @@ Base = declarative_base()
 
 
 class Upload(Base):
+    """ """
     __tablename__ = "uploads"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -19,6 +20,7 @@ class Upload(Base):
 
 
 class Result(Base):
+    """ """
     __tablename__ = "results"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -35,6 +37,7 @@ app = FastAPI()
 
 
 class Image(BaseModel):
+    """ """
     filename: str
     label: str
     recognition_result: str
@@ -42,6 +45,7 @@ class Image(BaseModel):
 
 @app.on_event("startup")
 def startup():
+    """ """
     Base.metadata.create_all(bind=engine)
 
 
@@ -62,6 +66,7 @@ async def process_image(file: UploadFile = File(...)):
 
 @app.get("/getAllResults", status_code=200)
 def getAllResults():
+    """ """
     db = SessionLocal()
     try:
         results = db.query(Result).all()
@@ -79,6 +84,7 @@ def getAllResults():
 
 @app.get("/test", status_code=200)
 def test():
+    """ """
     return "hello world"
 
 

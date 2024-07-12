@@ -4,11 +4,13 @@ DATABASE = "image_recognition.db"
 
 
 def get_db():
+    """ """
     conn = sqlite3.connect(DATABASE)
     return conn
 
 
 def create_tables():
+    """ """
     conn = get_db()
     cursor = conn.cursor()
     ### uploads table ###
