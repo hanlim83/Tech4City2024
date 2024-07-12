@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import model
+import uvicorn
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 Base = declarative_base()
@@ -72,3 +73,6 @@ def getAllResults():
 @app.get("/test", status_code=200)
 def test():
     return "hello world"
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
