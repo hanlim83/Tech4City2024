@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
-from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
 import model
 import uvicorn
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from pydantic import BaseModel
+from sqlalchemy import Column, ForeignKey, Integer, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 Base = declarative_base()
