@@ -1,7 +1,31 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import List
-import database  # Import the database module
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+
+DATABASE_URL = "sqlite:///image_recognition.db"
+Base = declarative_base()
+
+class Upload(Base):
+    __tablename__ = 'uploads'
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, nullable=False)
+    uploadPath = Column(String, nullable=False)
+    results = relationship("Result", back_populates="upload")
+
+class Result(Base):
+    __tablename__ = 'results'
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, nullable=False)
+    label = Column(String)
+    recognition_result = Column(String)
+    upload_id = Column(Integer, ForeignKey('uploads.id'))
+    upload = relationship("Upload", back_populates="results")
+
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
@@ -12,35 +36,17 @@ class Image(BaseModel):
 
 @app.on_event("startup")
 def startup():
-    database.create_tables()  # Ensure the tables are created on startup
+    Base.metadata.create_all(bind=engine)
 
-@app.get("/images", response_model=List[Image])
-def get_images():
-    conn = database.get_db()
-    cursor = conn.cursor()
-    cursor.execute('SELECT filename, label, recognition_result FROM images')
-    rows = cursor.fetchall()
-    conn.close()
-    return [{"filename": row[0], "label": row[1], "recognition_result": row[2]} for row in rows]
+@app.get("/getAllResults", status_code=200)
+def getAllResults():
+    db = SessionLocal()
+    try:
+        results = db.query(Result).all()
+        return [Image(filename=result.filename, label=result.label, recognition_result=result.recognition_result) for result in results]
+    finally:
+        db.close()
 
-@app.post("/images", status_code=201)
-def create_image(image: Image):
-    conn = database.get_db()
-    cursor = conn.cursor()
-    cursor.execute('''
-    INSERT INTO images (filename, label, recognition_result)
-    VALUES (?, ?, ?)
-    ''', (image.filename, image.label, image.recognition_result))
-    conn.commit()
-    conn.close()
-    return {"message": "Image metadata inserted successfully"}
-
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: str = None):
-#     """
-
-#     :param item_id: int:
-#     :param q: str:  (Default value = None)
-
-#     """
-#     return {"item_id": item_id, "q": q}
+@app.get("/test", status_code=200)
+def test():
+    return "hello world"
