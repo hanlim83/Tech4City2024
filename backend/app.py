@@ -86,8 +86,7 @@ def getAllResults():
                 filename=result.filename,
                 label=result.label,
                 recognition_result=result.recognition_result,
-            )
-            for result in results
+            ) for result in results
         ]
     finally:
         db.close()
