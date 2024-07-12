@@ -20,6 +20,7 @@ Base = declarative_base()
 
 class Upload(Base):
     """ """
+
     __tablename__ = "uploads"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -29,6 +30,7 @@ class Upload(Base):
 
 class Result(Base):
     """ """
+
     __tablename__ = "results"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -46,6 +48,7 @@ app = FastAPI()
 
 class Image(BaseModel):
     """ """
+
     filename: str
     label: str
     recognition_result: str
@@ -83,7 +86,8 @@ def getAllResults():
                 filename=result.filename,
                 label=result.label,
                 recognition_result=result.recognition_result,
-            ) for result in results
+            )
+            for result in results
         ]
     finally:
         db.close()
