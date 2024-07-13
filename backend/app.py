@@ -35,7 +35,6 @@ class Upload(Base):
     __tablename__ = "uploads"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
-    uploadPath = Column(String, nullable=False)
     results = relationship("Result", back_populates="upload")
 
 
@@ -85,8 +84,8 @@ def startup():
     Base.metadata.create_all(bind=engine)
 
 
-@app.post("/process")
-async def process_image(file: UploadFile = File(...)):
+@app.post("/analyze", status_code=200)
+async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
         db = SessionLocal()
         # Here you can save the file or process it
@@ -118,21 +117,16 @@ async def process_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/getAllResults", status_code=200)
+
+@app.get("/results", status_code=200)
 def getAllResults():
     """ """
-    db = SessionLocal()
     try:
+        db = SessionLocal()
         results = db.query(Result).all()
-        return [
-            Image(
-                filename=result.filename,
-                label=result.label,
-                recognition_result=result.recognition_result,
-            ) for result in results
-        ]
-    finally:
-        db.close()
+        return JSONResponse(content=[{"filename": result.filename, "fire": result.fire, "smoke": result.smoke, "default": result.default} for result in results])
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/test", status_code=200)
@@ -147,4 +141,4 @@ app.mount("/files/results",
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
