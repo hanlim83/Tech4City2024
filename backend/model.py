@@ -1,5 +1,6 @@
-from ultralytics import YOLO
 import os
+
+from ultralytics import YOLO
 
 annotated_image_directory = "annotated_images"
 
