@@ -14,6 +14,5 @@ def predict(image_path):
     # Perform inference on the image
     results = model(image_path)
     # Save the annotated image
-    results.img[0].save(
-        f"{annotated_image_directory}/{image_path.split('/')[-1]}")
+    results.img[0].save(f"{annotated_image_directory}/{image_path.split('/')[-1]}")
     return results.img[0]
