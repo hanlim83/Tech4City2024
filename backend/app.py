@@ -1,4 +1,4 @@
-import model
+from . import model
 import uvicorn
 from fastapi import FastAPI
 from fastapi import File
