@@ -1,22 +1,18 @@
-from . import model
+import os
+from datetime import datetime
+
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from sqlalchemy import Column
-from sqlalchemy import create_engine
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import Float
+from sqlalchemy import (Column, Float, ForeignKey, Integer, String,
+                        create_engine)
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker
-from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import relationship, sessionmaker
 from starlette.staticfiles import StaticFiles
-import os
-from datetime import datetime
+
+from . import model
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 frontend_folder = "../frontend"
