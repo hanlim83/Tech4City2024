@@ -3,6 +3,7 @@ import os
 
 annotated_image_directory = "annotated_images"
 
+
 def load_model():
     """ """
     # Load the model
