@@ -15,7 +15,8 @@ def load_model():
 def predict(model, image_path):
     """
 
-    :param image_path:
+    :param image_path: 
+    :param model: 
 
     """
     # Perform inference on the image
