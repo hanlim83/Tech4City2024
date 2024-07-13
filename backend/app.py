@@ -69,6 +69,7 @@ class Image(BaseModel):
 
 class CustomStaticFiles(StaticFiles):
     """ """
+
     async def lookup(self, path):
         if path == "":
             # Serve index.html for the root URL
@@ -88,7 +89,8 @@ def startup():
 async def process_image(file: UploadFile = File(...)):
     try:
         # Here you can save the file or process it
-        filename = "_".join([datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
+        filename = "_".join(
+            [datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -110,8 +112,7 @@ def getAllResults():
                 filename=result.filename,
                 label=result.label,
                 recognition_result=result.recognition_result,
-            )
-            for result in results
+            ) for result in results
         ]
     finally:
         db.close()
@@ -123,10 +124,12 @@ def test():
     return "hello world"
 
 
-app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
-app.mount(
-    "/files/results", StaticFiles(directory=annotated_results_folder), name="results"
-)
+app.mount("/files/uploads",
+          StaticFiles(directory=uploads_folder),
+          name="uploads")
+app.mount("/files/results",
+          StaticFiles(directory=annotated_results_folder),
+          name="results")
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
