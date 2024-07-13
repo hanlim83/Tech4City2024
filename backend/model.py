@@ -1,8 +1,6 @@
 from ultralytics import YOLO
 import os
 
-annotated_image_directory = "annotated_images"
-
 def load_model():
     """ """
     # Load the model
@@ -19,10 +17,9 @@ def predict(model, image_path):
     # Perform inference on the image
     results = model(image_path)
     for result in results:
-        boxes = result.boxes
-        masks = result.masks
-        keypoints = result.keypoints
-        probs = result.probs
-        obb = result.obb
-        result.save(f"{annotated_image_directory}/{image_path.split('/')[-1]}")
+        print(result.names)
+        for box in result.boxes:
+            print(result.names[box.cls.item()])
+            print(box.conf.item())
+        result.save(os.path.join(os.path.dirname(__file__), "results", image_path.split("/")[-1]))
     return results

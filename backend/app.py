@@ -9,6 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
@@ -26,6 +27,7 @@ if not os.path.exists(uploads_folder):
 if not os.path.exists(annotated_results_folder):
     os.makedirs(annotated_results_folder)
 Base = declarative_base()
+yolo_model = None
 
 
 class Upload(Base):
@@ -42,8 +44,9 @@ class Result(Base):
     __tablename__ = "results"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
-    label = Column(String)
-    recognition_result = Column(String)
+    fire = Column(Float, nullable=True)
+    default = Column(Float, nullable=True)
+    smoke = Column(Float, nullable=True)
     upload_id = Column(Integer, ForeignKey("uploads.id"))
     upload = relationship("Upload", back_populates="results")
 
@@ -77,22 +80,40 @@ class CustomStaticFiles(StaticFiles):
 @app.on_event("startup")
 def startup():
     """ """
-    model.load_model()
+    global yolo_model
+    yolo_model = model.load_model()
     Base.metadata.create_all(bind=engine)
 
 
 @app.post("/process")
 async def process_image(file: UploadFile = File(...)):
     try:
+        db = SessionLocal()
         # Here you can save the file or process it
         filename = "_".join(
             [datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        results = model.predict(f"uploads/{filename}")
-        # Return the prediction results
-        return JSONResponse(content=results)
+        db_upload = Upload(filename=filename, uploadPath=f"uploads/{filename}")
+        db.add(db_upload)
+        db.commit()
+        results = model.predict(yolo_model,f"uploads/{filename}")
+        for r in results:
+            db_result = Result(
+                filename=filename,
+                upload_id=db_upload.id,
+            )
+            for box in r.boxes:
+                if r.names[box.cls.item()] == "fire":
+                    db_result.fire = box.conf.item()
+                elif r.names[box.cls.item()] == "smoke":
+                    db_result.smoke = box.conf.item()
+                else:
+                    db_result.default = box.conf.item()
+            db.add(db_result)
+        db.commit()
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
