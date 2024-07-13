@@ -2,7 +2,7 @@ from ultralytics import YOLO
 
 annotated_image_directory = "annotated_images"
 # Load the custom YOLOv8 model
-model = YOLO("model.pt")
+model = YOLO("/app/backend/model.pt")
 
 
 def predict(image_path):

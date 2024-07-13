@@ -1,9 +1,10 @@
-import model
+from . import model
 import uvicorn
 from fastapi import FastAPI
 from fastapi import File
 from fastapi import HTTPException
 from fastapi import UploadFile
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import create_engine
@@ -52,6 +53,10 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
+
+
+# Serve the frontend files
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 
 class Image(BaseModel):
