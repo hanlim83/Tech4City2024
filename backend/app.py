@@ -21,11 +21,11 @@ from datetime import datetime
 DATABASE_URL = "sqlite:///image_recognition.db"
 frontend_folder = "../frontend"
 uploads_folder = "./uploads"
-annotated_results_folder = "./results"
+results_folder = "./results"
 if not os.path.exists(uploads_folder):
     os.makedirs(uploads_folder)
-if not os.path.exists(annotated_results_folder):
-    os.makedirs(annotated_results_folder)
+if not os.path.exists(results_folder):
+    os.makedirs(results_folder)
 Base = declarative_base()
 yolo_model = None
 
@@ -143,7 +143,7 @@ def test():
 
 app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
 app.mount("/files/results",
-          StaticFiles(directory=annotated_results_folder), name="results")
+          StaticFiles(directory=results_folder), name="results")
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
