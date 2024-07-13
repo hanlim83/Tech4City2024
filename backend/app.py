@@ -1,22 +1,26 @@
-from . import model
+import os
+from datetime import datetime
+
 import uvicorn
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI
+from fastapi import File
+from fastapi import HTTPException
+from fastapi import UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import create_engine
+from sqlalchemy import Float
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
-from sqlalchemy import Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
-from fastapi.staticfiles import StaticFiles
 from starlette.staticfiles import StaticFiles
-import os
-from datetime import datetime
+
+from . import model
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 frontend_folder = "../frontend"
@@ -32,6 +36,7 @@ yolo_model = None
 
 class Upload(Base):
     """ """
+
     __tablename__ = "uploads"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -40,6 +45,7 @@ class Upload(Base):
 
 class Result(Base):
     """ """
+
     __tablename__ = "results"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -55,23 +61,25 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
-
 # Serve the frontend files
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 
 class Image(BaseModel):
     """ """
+
     filename: str
     label: str
     recognition_result: str
 
 
 class CustomStaticFiles(StaticFiles):
+    """ """
+
     async def lookup(self, path):
         if path == "":
             # Serve index.html for the root URL
-            return os.path.join(self.directory, 'index.html')
+            return os.path.join(self.directory, "index.html")
         else:
             return await super().lookup(path)
 
@@ -97,7 +105,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         db_upload = Upload(filename=filename, uploadPath=f"uploads/{filename}")
         db.add(db_upload)
         db.commit()
-        results = model.predict(yolo_model,f"uploads/{filename}")
+        results = model.predict(yolo_model, f"uploads/{filename}")
         for r in results:
             db_result = Result(
                 filename=filename,
@@ -117,14 +125,18 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-
 @app.get("/results", status_code=200)
 def getAllResults():
     """ """
     try:
         db = SessionLocal()
         results = db.query(Result).all()
-        return JSONResponse(content=[{"filename": result.filename, "fire": result.fire, "smoke": result.smoke, "default": result.default} for result in results])
+        return JSONResponse(content=[{
+            "filename": result.filename,
+            "fire": result.fire,
+            "smoke": result.smoke,
+            "default": result.default,
+        } for result in results])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -135,9 +147,12 @@ def test():
     return "hello world"
 
 
-app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
+app.mount("/files/uploads",
+          StaticFiles(directory=uploads_folder),
+          name="uploads")
 app.mount("/files/results",
-          StaticFiles(directory=results_folder), name="results")
+          StaticFiles(directory=results_folder),
+          name="results")
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
