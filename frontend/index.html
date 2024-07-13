@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>AI Fire Detection</title>
+        <link rel="icon" href="./images/pg-logo.png" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="bg-gray-100">
+        <div class="container mx-auto py-8">
+            <h1 class="text-3xl font-bold text-center mb-8">
+                AI Fire Detection
+            </h1>
+            <div class="mb-8">
+                <input type="file" id="fileInput" class="block w-full mb-4" />
+                <button
+                    id="uploadBtn"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Upload Image
+                </button>
+            </div>
+            <div id="uploadResult" class="mb-8"></div>
+            <h2 class="text-2xl font-bold mb-4">Images</h2>
+            <div
+                id="imageContainer"
+                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            ></div>
+        </div>
+        <script src="index.js"></script>
+    </body>
+</html>
