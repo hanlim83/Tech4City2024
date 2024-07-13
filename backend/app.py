@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+import shutil
 import uvicorn
 from fastapi import FastAPI
 from fastapi import File
@@ -38,7 +39,7 @@ class Upload(Base):
     """ """
 
     __tablename__ = "uploads"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     filename = Column(String, nullable=False)
     results = relationship("Result", back_populates="upload")
 
@@ -47,7 +48,7 @@ class Result(Base):
     """ """
 
     __tablename__ = "results"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     filename = Column(String, nullable=False)
     fire = Column(Float, nullable=True)
     default = Column(Float, nullable=True)
@@ -60,10 +61,6 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
-
-# Serve the frontend files
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
-
 
 class Image(BaseModel):
     """ """
@@ -102,7 +99,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        db_upload = Upload(filename=filename, uploadPath=f"uploads/{filename}")
+        db_upload = Upload(filename=filename)
         db.add(db_upload)
         db.commit()
         results = model.predict(yolo_model, f"uploads/{filename}")
