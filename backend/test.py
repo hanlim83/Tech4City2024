@@ -15,5 +15,4 @@ for result in results:
     print(
         result.save(
             "results/newsmoke2_mp4-19_jpg.rf.a9c891012654fdd371a618ccfdfb591c.jpg"
-        )
-    )
+        ))
