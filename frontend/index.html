@@ -3,20 +3,65 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>AI Fire Detection</title>
-        <link rel="icon" href="./images/pg-logo.png" />
+        <title>Predict Guardians</title>
         <link
-            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
             rel="stylesheet"
         />
+        <link rel="icon" href="./images/pg-logo.png" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+            theme: {
+                extend: {
+                colors: {
+                    clifford: '#da373d',
+                    // test config
+                }
+                }
+            }
+            }
+        </script>
     </head>
     <body class="bg-gray-100">
         <div class="container mx-auto py-8">
-            <h1 class="text-3xl font-bold text-center mb-8">
-                AI Fire Detection
+            <h1 class="text-3xl font-bold text-center mb-8 text-black">
+                AI-Powered Fire Detection Tool 🔥
             </h1>
-            <div class="mb-8">
-                <input type="file" id="fileInput" class="block w-full mb-4" />
+            <h3 class="text-2xl font-semibold text-center mb-8">Upload a video here to see our AI in action!</h3>
+            <div class="mb-8 flex justify-center">
+                <input id="fileInput" type="file" class="file-input file-input-accent w-20% m-3" />
+                <button id="uploadBtn" class="btn btn-outline btn-warning m-3">Upload</button>
+            </div>
+            <div id="uploadResult" class="mb-8"></div>
+            <div
+            id="imageContainer"
+            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            ></div>
+            <h3 class="text-2xl font-semibold text-center mb-8">View past data and results here!</h3>
+        </div>
+        <footer
+            class="footer footer-center text-primary-content p-10"
+        >
+            <aside>
+                <img
+                width="50"
+                height="50"
+                src="./images/pg-logo.png"
+                alt="Logo"
+                class="inline-block"
+            />
+                </img>
+                <p class="font-bold">
+                    Predict Guardians Ltd.
+                    <br />
+                    Fire safety anywhere, anytime
+                </p>
+                <p>
+                    Copyright © 2024 - All right reserved
+                </p>
+            </aside>
+        </footer>
                 <button
                     id="uploadBtn"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

@@ -14,8 +14,18 @@ from sqlalchemy import String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
+from fastapi.staticfiles import StaticFiles
+from starlette.staticfiles import StaticFiles
+import os
 
 DATABASE_URL = "sqlite:///image_recognition.db"
+frontend_folder = "../frontend"
+uploads_folder = "./uploads"
+annotated_results_folder = "./results"
+if not os.path.exists(uploads_folder):
+    os.makedirs(uploads_folder)
+if not os.path.exists(annotated_results_folder):
+    os.makedirs(annotated_results_folder)
 Base = declarative_base()
 
 
@@ -54,6 +64,15 @@ class Image(BaseModel):
     filename: str
     label: str
     recognition_result: str
+
+
+class CustomStaticFiles(StaticFiles):
+    async def lookup(self, path):
+        if path == "":
+            # Serve index.html for the root URL
+            return os.path.join(self.directory, 'index.html')
+        else:
+            return await super().lookup(path)
 
 
 @app.on_event("startup")
@@ -99,6 +118,11 @@ def test():
     """ """
     return "hello world"
 
+
+app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
+app.mount("/files/results",
+          StaticFiles(directory=annotated_results_folder), name="results")
+app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
