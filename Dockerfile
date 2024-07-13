@@ -1,13 +1,16 @@
-FROM python:3.12
+FROM python:3.12-slim-bullseye
 
 WORKDIR /app
 
 COPY . .
 
-WORKDIR /app/backend
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r backend/requirements.txt
 
-EXPOSE 5000
+EXPOSE 8000
 
-CMD [ "python", "app.py" ]
+CMD ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+
