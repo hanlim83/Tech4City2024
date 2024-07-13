@@ -23,7 +23,7 @@ from starlette.staticfiles import StaticFiles
 from . import model
 
 DATABASE_URL = "sqlite:///image_recognition.db"
-frontend_folder = "../frontend"
+frontend_folder = "/app/frontend"
 uploads_folder = "./uploads"
 results_folder = "./results"
 if not os.path.exists(uploads_folder):
