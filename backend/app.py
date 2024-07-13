@@ -67,6 +67,7 @@ class Image(BaseModel):
 
 
 class CustomStaticFiles(StaticFiles):
+    """ """
     async def lookup(self, path):
         if path == "":
             # Serve index.html for the root URL
