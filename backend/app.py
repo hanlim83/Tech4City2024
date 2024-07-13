@@ -1,9 +1,7 @@
 import model
 import uvicorn
-from fastapi import FastAPI
-from fastapi import File
-from fastapi import HTTPException
-from fastapi import UploadFile
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import create_engine
@@ -16,6 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.staticfiles import StaticFiles
 from starlette.staticfiles import StaticFiles
 import os
+from datetime import datetime
 
 DATABASE_URL = "sqlite:///image_recognition.db"
 frontend_folder = "../frontend"
@@ -73,6 +72,7 @@ class CustomStaticFiles(StaticFiles):
 @app.on_event("startup")
 def startup():
     """ """
+    model.load_model()
     Base.metadata.create_all(bind=engine)
 
 
@@ -80,13 +80,14 @@ def startup():
 async def process_image(file: UploadFile = File(...)):
     try:
         # Here you can save the file or process it
-        filename = file.filename
+        filename = "_".join(
+            [datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        result = model.predict(f"uploads/{filename}")
-        # Return a response or processing result
-        return result
+        results = model.predict(f"uploads/{filename}")
+        # Return the prediction results
+        return JSONResponse(content=results)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

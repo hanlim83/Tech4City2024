@@ -1,11 +1,16 @@
 from ultralytics import YOLO
+import os
 
 annotated_image_directory = "annotated_images"
-# Load the custom YOLOv8 model
-model = YOLO("model.pt")
+
+def load_model():
+    """ """
+    # Load the model
+    model = YOLO(os.path.join(os.path.dirname(__file__), "model.pt"))
+    return model
 
 
-def predict(image_path):
+def predict(model, image_path):
     """
 
     :param image_path:
@@ -13,7 +18,11 @@ def predict(image_path):
     """
     # Perform inference on the image
     results = model(image_path)
-    # Save the annotated image
-    results.img[0].save(
-        f"{annotated_image_directory}/{image_path.split('/')[-1]}")
-    return results.img[0]
+    for result in results:
+        boxes = result.boxes
+        masks = result.masks
+        keypoints = result.keypoints
+        probs = result.probs
+        obb = result.obb
+        result.save(f"{annotated_image_directory}/{image_path.split('/')[-1]}")
+    return results
