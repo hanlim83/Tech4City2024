@@ -97,7 +97,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         db_upload = Upload(filename=filename, uploadPath=f"uploads/{filename}")
         db.add(db_upload)
         db.commit()
-        results = model.predict(yolo_model,f"uploads/{filename}")
+        results = model.predict(yolo_model, f"uploads/{filename}")
         for r in results:
             db_result = Result(
                 filename=filename,
@@ -115,7 +115,6 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 
 @app.get("/results", status_code=200)
