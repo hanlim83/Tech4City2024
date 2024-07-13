@@ -32,6 +32,7 @@ yolo_model = None
 
 class Upload(Base):
     """ """
+
     __tablename__ = "uploads"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -40,6 +41,7 @@ class Upload(Base):
 
 class Result(Base):
     """ """
+
     __tablename__ = "results"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String, nullable=False)
@@ -62,6 +64,7 @@ app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
 class Image(BaseModel):
     """ """
+
     filename: str
     label: str
     recognition_result: str
@@ -71,7 +74,7 @@ class CustomStaticFiles(StaticFiles):
     async def lookup(self, path):
         if path == "":
             # Serve index.html for the root URL
-            return os.path.join(self.directory, 'index.html')
+            return os.path.join(self.directory, "index.html")
         else:
             return await super().lookup(path)
 
@@ -89,8 +92,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
         db = SessionLocal()
         # Here you can save the file or process it
-        filename = "_".join(
-            [datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
+        filename = "_".join([datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -123,7 +125,17 @@ def getAllResults():
     try:
         db = SessionLocal()
         results = db.query(Result).all()
-        return JSONResponse(content=[{"filename": result.filename, "fire": result.fire, "smoke": result.smoke, "default": result.default} for result in results])
+        return JSONResponse(
+            content=[
+                {
+                    "filename": result.filename,
+                    "fire": result.fire,
+                    "smoke": result.smoke,
+                    "default": result.default,
+                }
+                for result in results
+            ]
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -135,8 +147,7 @@ def test():
 
 
 app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
-app.mount("/files/results",
-          StaticFiles(directory=results_folder), name="results")
+app.mount("/files/results", StaticFiles(directory=results_folder), name="results")
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
