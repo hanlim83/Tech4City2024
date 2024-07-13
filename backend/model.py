@@ -8,7 +8,7 @@ model = YOLO("/app/backend/model.pt")
 def predict(image_path):
     """
 
-    :param image_path: 
+    :param image_path:
 
     """
     # Perform inference on the image
