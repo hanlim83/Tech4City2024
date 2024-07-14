@@ -96,7 +96,8 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
         db = SessionLocal()
         # Here you can save the file or process it
-        filename = "_".join([datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
+        filename = "_".join(
+            [datetime.now().strftime("%Y%m%d_%H%M%S"), file.filename])
         # For example, save the file to disk
         with open(f"uploads/{filename}", "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
@@ -140,9 +141,11 @@ def getAllResults():
         else:
             detection_result = "No detection"
 
-        response.append(
-            {"id": result.id, "filename": result.filename, "result": detection_result}
-        )
+        response.append({
+            "id": result.id,
+            "filename": result.filename,
+            "result": detection_result
+        })
     return response
 
 
@@ -152,8 +155,12 @@ def test():
     return "hello world"
 
 
-app.mount("/files/uploads", StaticFiles(directory=uploads_folder), name="uploads")
-app.mount("/files/results", StaticFiles(directory=results_folder), name="results")
+app.mount("/files/uploads",
+          StaticFiles(directory=uploads_folder),
+          name="uploads")
+app.mount("/files/results",
+          StaticFiles(directory=results_folder),
+          name="results")
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
