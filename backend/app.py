@@ -9,6 +9,7 @@ from fastapi import HTTPException
 from fastapi import UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import create_engine
@@ -80,6 +81,15 @@ class CustomStaticFiles(StaticFiles):
             return os.path.join(self.directory, "index.html")
         else:
             return await super().lookup(path)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
