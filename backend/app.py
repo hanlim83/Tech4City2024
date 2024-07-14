@@ -1,15 +1,13 @@
+from typing import List
 from . import model
+import shutil
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from sqlalchemy import Column
+from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy import create_engine
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
@@ -118,21 +116,29 @@ async def process_image(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/getAllResults", status_code=200)
+@app.get("/getAllResults", response_model=List[Image], status_code=200)
 def getAllResults():
-    """ """
     db = SessionLocal()
-    try:
-        results = db.query(Result).all()
-        return [
-            Image(
-                filename=result.filename,
-                label=result.label,
-                recognition_result=result.recognition_result,
-            ) for result in results
-        ]
-    finally:
-        db.close()
+    results = db.query(Result).all()
+    response = []
+    for result in results:
+        detection_result = ""
+        if result.fire is not None:
+            detection_result = f"Fire ({result.fire * 100:.2f}%)"
+        elif result.default is not None:
+            detection_result = f"Default ({result.default * 100:.2f}%)"
+        elif result.smoke is not None:
+            detection_result = f"Smoke ({result.smoke * 100:.2f}%)"
+        else:
+            detection_result = "No detection"
+        
+        response.append({
+            "id": result.id,
+            "filename": result.filename,
+            "result": detection_result
+        })
+    return response
+
 
 
 @app.get("/test", status_code=200)

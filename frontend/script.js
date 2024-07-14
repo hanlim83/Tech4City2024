@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const uploadResult = document.getElementById('uploadResult');
     const imageContainer = document.getElementById('imageContainer');
+    const resultsTableBody = document.getElementById('resultsTableBody');
 
     uploadBtn.addEventListener('click', function() {
         const file = fileInput.files[0];
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData();
         formData.append('image', file);
 
-        fetch('/images', {
+        fetch('/process', {
             method: 'POST',
             body: formData,
         })
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function loadImages() {
-        fetch('/images')
+        fetch('/process')
         .then(response => response.json())
         .then(data => {
             imageContainer.innerHTML = '';
@@ -50,5 +51,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function fetchResults() {
+        fetch('/getAllResults')
+        .then(response => response.json())
+        .then(data => {
+            resultsTableBody.innerHTML = '';
+            data.forEach(result => {
+                const row = document.createElement('tr');
+                row.classList.add('border', 'border-gray-300');
+
+                const idCell = document.createElement('td');
+                idCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
+                idCell.textContent = result.id;
+                row.appendChild(idCell);
+
+                const filenameCell = document.createElement('td');
+                filenameCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
+                filenameCell.textContent = result.filename;
+                row.appendChild(filenameCell);
+
+                const resultCell = document.createElement('td');
+                resultCell.classList.add('border', 'border-gray-300', 'px-4', 'py-2');
+                resultCell.textContent = result.result;
+                row.appendChild(resultCell);
+
+                resultsTableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching results:', error);
+        });
+    }
+
     loadImages();
+    fetchResults();
 });

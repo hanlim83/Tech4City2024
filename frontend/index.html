@@ -4,22 +4,24 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Predict Guardians</title>
+        
         <link
             href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css"
             rel="stylesheet"
         />
+        <link rel="stylesheet" href="styles.css">
         <link rel="icon" href="./images/pg-logo.png" />
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
-            theme: {
-                extend: {
-                colors: {
-                    clifford: '#da373d',
-                    // test config
+                theme: {
+                    extend: {
+                    colors: {
+                        clifford: '#da373d',
+                        // test config
+                    }
+                    }
                 }
-                }
-            }
             }
         </script>
     </head>
@@ -28,17 +30,31 @@
             <h1 class="text-3xl font-bold text-center mb-8 text-black">
                 AI-Powered Fire Detection Tool 🔥
             </h1>
-            <h3 class="text-2xl font-semibold text-center mb-8">Upload a video here to see our AI in action!</h3>
+            <h3 class="text-2xl font-semibold text-center mb-8">Upload your Image here to see our AI in action!</h3>
             <div class="mb-8 flex justify-center">
                 <input id="fileInput" type="file" class="file-input file-input-accent w-20% m-3" />
                 <button id="uploadBtn" class="btn btn-outline btn-warning m-3">Upload</button>
             </div>
-            <div id="uploadResult" class="mb-8"></div>
+            <div id="uploadResult" class="mb-8 mt-8"></div>
             <div
-            id="imageContainer"
-            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                id="imageContainer"
+                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
             ></div>
-            <h3 class="text-2xl font-semibold text-center mb-8">View past data and results here!</h3>
+            <h3 class="text-2xl font-semibold text-center mb-8 mt-8">View past data and results here!</h3>
+            <div class="overflow-x-auto max-w-6xl mx-auto mb-8">
+                <table class="table-auto w-full border-collapse border border-gray-300">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2 text-left">ID</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Filename</th>
+                            <th class="border border-gray-300 px-4 py-2 text-left">Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <!-- Results will be injected here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
         <footer
             class="footer footer-center text-primary-content p-10"
@@ -62,20 +78,6 @@
                 </p>
             </aside>
         </footer>
-                <button
-                    id="uploadBtn"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Upload Image
-                </button>
-            </div>
-            <div id="uploadResult" class="mb-8"></div>
-            <h2 class="text-2xl font-bold mb-4">Images</h2>
-            <div
-                id="imageContainer"
-                class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"
-            ></div>
-        </div>
         <script src="script.js"></script>
     </body>
 </html>
