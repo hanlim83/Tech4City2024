@@ -104,6 +104,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         db.add(db_upload)
         db.commit()
         results = model.predict(yolo_model, f"{uploads_folder}/{filename}")
+        db_result = None
         for r in results:
             r.save(os.path.join(os.path.dirname(
                 __file__), results_folder, filename))
@@ -112,14 +113,21 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
                 upload_id=db_upload.id,
             )
             for box in r.boxes:
-                if r.names[box.cls.item()] == "fire":
+                if r.names[box.cls.item()] == "fire" or r.names[box.cls.item()] == "Fire":
                     db_result.fire = box.conf.item()
-                elif r.names[box.cls.item()] == "smoke":
+                elif r.names[box.cls.item()] == "smoke" or r.names[box.cls.item()] == "Smoke":
                     db_result.smoke = box.conf.item()
                 else:
                     db_result.default = box.conf.item()
             db.add(db_result)
-        db.commit()
+            db.commit()
+        return JSONResponse(content={
+            "filename": db_result.filename,
+            "fire": db_result.fire,
+            "smoke": db_result.smoke,
+            "default": db_result.default,
+            "downloadPath": f"/files/results/{filename}"
+        })
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -136,6 +144,8 @@ def getAllResults():
             "fire": result.fire,
             "smoke": result.smoke,
             "default": result.default,
+            "downloadPath": f"/files/results/{result.filename}",
+            "linked_upload_id": result.upload_id
         } for result in results])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
