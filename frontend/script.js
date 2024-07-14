@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append("file", file);
 
         fetch("/analyze", {
             method: "POST",
@@ -48,17 +48,19 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 console.log(data);
 
-                // const allResults = document.getElementById("allResults");
-                // allResults.innerHTML = "";
-                // data.images.forEach((image) => {
-                //     const imgCard = document.createElement("div");
-                //     imgCard.className = "bg-white p-4 rounded shadow";
-                //     imgCard.innerHTML = `
-                //         <img src="../backend/${image.url}" alt="Image" class="w-full h-48 object-cover rounded">
-                //         <p class="mt-2 text-center">Confidence: ${image.confidence}%</p>
-                //     `;
-                //     allResults.appendChild(imgCard);
-                // });
+                const allResults = document.getElementById("allResults");
+                allResults.innerHTML = "";
+                data.images.forEach((image) => {
+                    const imgCard = document.createElement("div");
+                    imgCard.className = "bg-white p-4 rounded shadow";
+                    imgCard.innerHTML = `
+                        <img src="../backend/images/${image.url}" class="w-full h-48 object-cover rounded">
+                        <p class="mt-2 text-center">Fire: ${image.fire}</p>
+                        <p class="mt-2 text-center">Smoke: ${image.smoke}</p>
+                        <p class="mt-2 text-center">Confidence: ${image.default}</p>
+                    `;
+                    allResults.appendChild(imgCard);
+                });
             })
             .catch((error) => {
                 console.error("Error fetching images:", error);
