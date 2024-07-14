@@ -50,14 +50,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const allResults = document.getElementById("allResults");
                 allResults.innerHTML = "";
-                data.images.forEach((image) => {
+                data.forEach((image) => {
                     const imgCard = document.createElement("div");
-                    imgCard.className = "bg-white p-4 rounded shadow";
+                    imgCard.className = "bg-white p-4 rounded shadow m-8";
+                    const fire =
+                        image.fire !== null
+                            ? `<p class="mt-2 text-center">Fire: ${image.fire}</p>`
+                            : "";
+                    const smoke =
+                        image.smoke !== null
+                            ? `<p class="mt-2 text-center">Smoke: ${image.smoke}</p>`
+                            : "";
+                    const undetected =
+                        image.default !== null
+                            ? `<p class="mt-2 text-center">Undetected: ${image.default}</p>`
+                            : "";
+
                     imgCard.innerHTML = `
-                        <img src="../backend/images/${image.url}" class="w-full h-48 object-cover rounded">
-                        <p class="mt-2 text-center">Fire: ${image.fire}</p>
-                        <p class="mt-2 text-center">Smoke: ${image.smoke}</p>
-                        <p class="mt-2 text-center">Confidence: ${image.default}</p>
+                        <img src="${image.downloadPath}" class="w-full h-48 object-cover rounded">
+                        ${fire}
+                        ${smoke}
+                        ${undetected}
                     `;
                     allResults.appendChild(imgCard);
                 });
