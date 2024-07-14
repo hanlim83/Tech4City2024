@@ -35,7 +35,7 @@ if not os.path.exists(results_folder):
 Base = declarative_base()
 yolo_model = None
 
-
+### initalise database tables and columns ###
 class Upload(Base):
     """ """
 
@@ -60,7 +60,6 @@ class Result(Base):
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 app = FastAPI()
 
 
@@ -91,7 +90,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+### initialise the model on standup ###
 @app.on_event("startup")
 def startup():
     """ """
@@ -99,7 +98,7 @@ def startup():
     Base.metadata.create_all(bind=engine)
     yolo_model = model.load_model()
 
-
+### anaylses uploaded images and determine if they is a fire within the image ###
 @app.post("/analyze", status_code=200)
 async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
@@ -115,6 +114,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         db.commit()
         results = model.predict(yolo_model, f"{uploads_folder}/{filename}")
         db_result = None
+        # saves results from model prediction to our database.db
         for r in results:
             r.save(os.path.join(os.path.dirname(
                 __file__), results_folder, filename))
@@ -122,6 +122,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
                 filename=filename,
                 upload_id=db_upload.id,
             )
+            # puts the accuracy score into one of three columns (fire, default, smoke)
             for box in r.boxes:
                 if r.names[box.cls.item()] == "fire" or r.names[box.cls.item()] == "Fire":
                     db_result.fire = box.conf.item()
@@ -142,7 +143,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+### returns all past results predict results and their accuracy score ###
 @app.get("/results", status_code=200)
 def getAllResults():
     """ """
@@ -160,13 +161,7 @@ def getAllResults():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@app.get("/test", status_code=200)
-def test():
-    """ """
-    return "hello world"
-
-
+### creates folders to store the results for our model's analyse ###
 app.mount("/files/uploads",
           StaticFiles(directory=uploads_folder),
           name="uploads")
