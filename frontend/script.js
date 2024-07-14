@@ -54,19 +54,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     data.fire !== null
                         ? `
                   <p class="mt-2 text-center text-red-500 font-bold">Fire Detected!</p>
-                  <p class="mt-2 text-center">Fire: ${data.fire}</p>`
+                  <p class="mt-2 text-center">Fire: ${((data.fire) * 100).toFixed(2) + '%'}</p>`
                         : "";
                 const smoke =
                     data.smoke !== null
                         ? `
                   <p class="mt-2 text-center text-orange-400 font-bold">Smoke Detected!</p>
-                  <p class="mt-2 text-center">Smoke: ${data.smoke}</p>`
+                  <p class="mt-2 text-center">Smoke: ${((data.smoke) * 100).toFixed(2) + '%'}</p>`
                         : "";
                 const undetected =
                     data.default !== null
                         ? `
                     <p class="mt-2 text-center text-green-500 font-bold">No fire or smoke detected</p>
-                    <p class="mt-2 text-center">Undetected: ${data.default}</p>`
+                    <p class="mt-2 text-center">Undetected: ${((data.default) * 100).toFixed(2) + '%'}</p>`
                         : "";
 
                 imgCard.innerHTML = `
@@ -105,19 +105,19 @@ document.addEventListener("DOMContentLoaded", function () {
                             image.fire !== null
                                 ? `
                   <p class="mt-2 text-center text-red-500 font-bold">Fire Detected!</p>
-                  <p class="mt-2 text-center">Fire: ${image.fire}</p>`
+                  <p class="mt-2 text-center">Fire: ${((image.fire) * 100).toFixed(2) + '%'}</p>`
                                 : "";
                         const smoke =
                             image.smoke !== null
                                 ? `
                   <p class="mt-2 text-center text-orange-400 font-bold">Smoke Detected!</p>
-                  <p class="mt-2 text-center">Smoke: ${image.smoke}</p>`
+                  <p class="mt-2 text-center">Smoke: ${((image.smoke) * 100).toFixed(2) + '%'}</p>`
                                 : "";
                         const undetected =
                             image.default !== null
                                 ? `
                     <p class="mt-2 text-center text-green-500 font-bold">No fire or smoke detected</p>
-                    <p class="mt-2 text-center">Undetected: ${image.default}</p>`
+                    <p class="mt-2 text-center">Undetected: ${((image.default) * 100).toFixed(2) + '%'}</p>`
                                 : "";
 
                         imgCard.innerHTML = `
