@@ -36,6 +36,8 @@ Base = declarative_base()
 yolo_model = None
 
 ### initalise database tables and columns ###
+
+
 class Upload(Base):
     """ """
 
@@ -91,6 +93,8 @@ app.add_middleware(
 )
 
 ### initialise the model on standup ###
+
+
 @app.on_event("startup")
 def startup():
     """ """
@@ -99,6 +103,8 @@ def startup():
     yolo_model = model.load_model()
 
 ### anaylses uploaded images and determine if they is a fire within the image ###
+
+
 @app.post("/analyze", status_code=200)
 async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
@@ -128,10 +134,10 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
                     db_result.fire = box.conf.item()
                 elif r.names[box.cls.item()] == "smoke" or r.names[box.cls.item()] == "Smoke":
                     db_result.smoke = box.conf.item()
-                else:
-                    db_result.default = box.conf.item()
+            if db_result.fire == None and db_result.smoke == None:
+                db_result.default = 1
             db.add(db_result)
-            db.commit()
+        db.commit()
         return JSONResponse(content={
             "filename": db_result.filename,
             "fire": db_result.fire,
@@ -144,6 +150,8 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 ### returns all past results predict results and their accuracy score ###
+
+
 @app.get("/results", status_code=200)
 def getAllResults():
     """ """
@@ -160,6 +168,7 @@ def getAllResults():
         } for result in results])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 ### creates folders to store the results for our model's analyse ###
 app.mount("/files/uploads",
