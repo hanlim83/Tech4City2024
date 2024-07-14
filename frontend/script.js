@@ -1,82 +1,94 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const uploadBtn = document.getElementById("uploadBtn");
-    const fileInput = document.getElementById("fileInput");
-    const getResults = document.getElementById("getResults");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const fileInput = document.getElementById("fileInput");
+  const getResults = document.getElementById("getResults");
+  const uploadResult = document.getElementById("uploadResult");
+  const allResults = document.getElementById("allResults");
+  const loadingIcon = document.getElementById("loadingIcon");
 
-    uploadBtn.addEventListener("click", function () {
-        const file = fileInput.files[0];
-        if (!file) {
-            uploadResult.textContent = "Please select a file first.";
-            return;
-        }
+  uploadBtn.addEventListener("click", function () {
+      const file = fileInput.files[0];
+      if (!file) {
+          uploadResult.textContent = "Please select a file first.";
+          return;
+      }
 
-        const formData = new FormData();
-        formData.append("file", file);
+      _analyzeFile(file);
+  });
 
-        fetch("/analyze", {
-            method: "POST",
-            body: formData,
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
+  getResults.addEventListener("click", function () {
+      _fetchResults();
+  });
 
-                // if (data.success) {
-                //     const uploadResult = document.getElementById("uploadResult");
-                //     imgCard.className = "bg-white p-4 rounded shadow";
-                //     imgCard.innerHTML = `
-                //         <img src="/images/${data.image}" alt="Image" class="w-full h-48 object-cover rounded">
-                //         <p class="mt-2 text-center">Confidence: ${data.confidence}%</p>
-                //     `;
-                //     uploadResult.innerHTML = "";
-                //     uploadResult.appendChild(imgCard);
-                // } else {
-                //     uploadResult.textContent = "Upload failed.";
-                // }
-            })
-            .catch((error) => {
-                console.error("Error uploading image:", error);
-                uploadResult.textContent = "Upload failed.";
-            });
-    });
+  function _analyzeFile(file) {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    getResults.addEventListener("click", function () {
-        fetch("/results", {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
+      loadingIcon.classList.remove("hidden");
+      uploadResult.textContent = "";
 
-                const allResults = document.getElementById("allResults");
-                allResults.innerHTML = "";
-                data.forEach((image) => {
-                    const imgCard = document.createElement("div");
-                    imgCard.className = "bg-white p-4 rounded shadow m-8";
-                    const fire =
-                        image.fire !== null
-                            ? `<p class="mt-2 text-center">Fire: ${image.fire}</p>`
-                            : "";
-                    const smoke =
-                        image.smoke !== null
-                            ? `<p class="mt-2 text-center">Smoke: ${image.smoke}</p>`
-                            : "";
-                    const undetected =
-                        image.default !== null
-                            ? `<p class="mt-2 text-center">Undetected: ${image.default}</p>`
-                            : "";
+      fetch(`/analyze`, {
+          method: "POST",
+          body: formData,
+      })
+      .then((response) => response.json())
+      .then((data) => {
+          console.log(data);
+          loadingIcon.classList.add("hidden");
 
-                    imgCard.innerHTML = `
-                        <img src="${image.downloadPath}" class="w-full h-48 object-cover rounded">
+          if (data.downloadPath) {
+              uploadResult.textContent = "Successfully uploaded and analyzed.";
+              _fetchResults();
+          } else {
+              uploadResult.textContent = "Upload failed.";
+          }
+      })
+      .catch((error) => {
+          console.error("Error uploading video:", error);
+          loadingIcon.classList.add("hidden");
+          uploadResult.textContent = "Upload failed.";
+      });
+  }
+
+  function _fetchResults() {
+      fetch("/results", {
+          method: "GET",
+      })
+      .then((response) => response.json())
+      .then((data) => {
+          console.log(data);
+
+          if (data.length == 0) {
+              alert("You have not uploaded any images.");
+          } else {
+              const allResults = document.getElementById("allResults");
+              allResults.innerHTML = "";
+              data.forEach((image) => {
+                  const imgCard = document.createElement("div");
+                  imgCard.className = "bg-white p-4 rounded shadow w-64 m-4";
+                  const fire = image.fire !== null ? `
+                  <p class="mt-2 text-center text-red-500 font-bold">Fire Detected!</p>
+                  <p class="mt-2 text-center">Fire: ${image.fire}</p>` : "";
+                  const smoke = image.smoke !== null ? `
+                  <p class="mt-2 text-center text-orange-400 font-bold">Smoke Detected!</p>
+                  <p class="mt-2 text-center">Smoke: ${image.smoke}</p>` : "";
+                  const undetected =
+                    image.default !== null ? `
+                    <p class="mt-2 text-center text-green-500 font-bold">No fire or smoke detected</p>
+                    <p class="mt-2 text-center">Undetected: ${image.default}</p>` : "";
+
+                  imgCard.innerHTML = `
+                        <img src="${image.downloadPath}" class="w-full h-48 object-contain rounded">
                         ${fire}
                         ${smoke}
                         ${undetected}
                     `;
-                    allResults.appendChild(imgCard);
-                });
-            })
-            .catch((error) => {
-                console.error("Error fetching images:", error);
-            });
-    });
+                  allResults.appendChild(imgCard);
+              });
+          }
+      })
+      .catch((error) => {
+          console.error("Error fetching images:", error);
+      });
+  }
 });
