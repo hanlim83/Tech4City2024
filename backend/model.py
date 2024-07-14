@@ -1,5 +1,7 @@
-from ultralytics import YOLO
 import os
+
+from ultralytics import YOLO
+
 
 def load_model():
     """ """
@@ -12,6 +14,7 @@ def predict(model, image_path):
     """
 
     :param image_path:
+    :param model:
 
     """
     # Perform inference on the image
@@ -21,5 +24,7 @@ def predict(model, image_path):
         for box in result.boxes:
             print(result.names[box.cls.item()])
             print(box.conf.item())
-        result.save(os.path.join(os.path.dirname(__file__), "results", image_path.split("/")[-1]))
+        result.save(
+            os.path.join(os.path.dirname(__file__), "results",
+                         image_path.split("/")[-1]))
     return results
