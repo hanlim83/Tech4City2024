@@ -157,7 +157,7 @@ def getAllResults():
     """ """
     try:
         db = SessionLocal()
-        results = db.query(Result).all()
+        results = db.query(Result).order_by(Result.id.desc()).all()
         return JSONResponse(content=[{
             "filename": result.filename,
             "fire": result.fire,
