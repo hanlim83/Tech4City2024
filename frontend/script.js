@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const fileInput = document.getElementById("fileInput");
     const getResults = document.getElementById("getResults");
     const uploadResult = document.getElementById("uploadResult");
-    const allResults = document.getElementById("allResults");
     const loadingIcon = document.getElementById("loadingIcon");
 
     uploadBtn.addEventListener("click", function () {
@@ -39,12 +38,44 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.downloadPath) {
                     uploadResult.textContent =
                         "Successfully uploaded and analyzed.";
-                    _fetchResults();
                 } else {
-                    uploadResult.textContent = "Upload failed.";
-                    uploadResult.classList.add("text-red-500");
                     uploadResult.classList.remove("text-green-600");
+                    uploadResult.classList.add("text-red-500");
+                    uploadResult.textContent = "Upload failed.";
+                    return;
                 }
+
+                const finalResult = document.getElementById("finalResult");
+                finalResult.innerHTML = "";
+
+                const imgCard = document.createElement("div");
+                imgCard.className = "bg-white p-4 rounded shadow w-64 m-4";
+                const fire =
+                    data.fire !== null
+                        ? `
+                  <p class="mt-2 text-center text-red-500 font-bold">Fire Detected!</p>
+                  <p class="mt-2 text-center">Fire: ${data.fire}</p>`
+                        : "";
+                const smoke =
+                    data.smoke !== null
+                        ? `
+                  <p class="mt-2 text-center text-orange-400 font-bold">Smoke Detected!</p>
+                  <p class="mt-2 text-center">Smoke: ${data.smoke}</p>`
+                        : "";
+                const undetected =
+                    data.default !== null
+                        ? `
+                    <p class="mt-2 text-center text-green-500 font-bold">No fire or smoke detected</p>
+                    <p class="mt-2 text-center">Undetected: ${data.default}</p>`
+                        : "";
+
+                imgCard.innerHTML = `
+                        <img src="${data.downloadPath}" class="w-full h-48 object-contain rounded">
+                        ${fire}
+                        ${smoke}
+                        ${undetected}
+                    `;
+                finalResult.appendChild(imgCard);
             })
             .catch((error) => {
                 console.error("Error uploading video:", error);
@@ -53,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function _fetchResults() {
+    getResults.addEventListener("click", function () {
         fetch("/results", {
             method: "GET",
         })
@@ -102,5 +133,5 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => {
                 console.error("Error fetching images:", error);
             });
-    }
+    });
 });
