@@ -24,7 +24,4 @@ def predict(model, image_path):
         for box in result.boxes:
             print(result.names[box.cls.item()])
             print(box.conf.item())
-        result.save(
-            os.path.join(os.path.dirname(__file__), "results",
-                         image_path.split("/")[-1]))
     return results

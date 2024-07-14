@@ -21,10 +21,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from starlette.staticfiles import StaticFiles
 
-from . import model
+import model
 
-DATABASE_URL = "sqlite:///image_recognition.db"
-frontend_folder = "/app/frontend"
+DATABASE_URL = "sqlite:///database.db"
+frontend_folder = "../frontend"
 uploads_folder = "./uploads"
 results_folder = "./results"
 if not os.path.exists(uploads_folder):
@@ -62,6 +62,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
+
 class Image(BaseModel):
     """ """
 
@@ -85,8 +86,8 @@ class CustomStaticFiles(StaticFiles):
 def startup():
     """ """
     global yolo_model
-    yolo_model = model.load_model()
     Base.metadata.create_all(bind=engine)
+    yolo_model = model.load_model()
 
 
 @app.post("/analyze", status_code=200)
@@ -102,8 +103,10 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         db_upload = Upload(filename=filename)
         db.add(db_upload)
         db.commit()
-        results = model.predict(yolo_model, f"uploads/{filename}")
+        results = model.predict(yolo_model, f"{uploads_folder}/{filename}")
         for r in results:
+            r.save(os.path.join(os.path.dirname(
+                __file__), results_folder, filename))
             db_result = Result(
                 filename=filename,
                 upload_id=db_upload.id,
@@ -153,4 +156,4 @@ app.mount("/files/results",
 app.mount("/", CustomStaticFiles(directory=frontend_folder, html=True))
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
