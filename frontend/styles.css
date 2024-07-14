@@ -1,0 +1,12 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+}
+.container {
+    /* If your content doesn't fill the screen, you might want to limit its width */
+    max-width: 960px; /* Example max-width */
+    width: 100%; /* Ensures it doesn't exceed the viewport width */
+}
