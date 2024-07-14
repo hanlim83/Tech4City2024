@@ -36,8 +36,6 @@ Base = declarative_base()
 yolo_model = None
 
 ### initalise database tables and columns ###
-
-
 class Upload(Base):
     """ """
 
@@ -93,8 +91,6 @@ app.add_middleware(
 )
 
 ### initialise the model on standup ###
-
-
 @app.on_event("startup")
 def startup():
     """ """
@@ -103,8 +99,6 @@ def startup():
     yolo_model = model.load_model()
 
 ### anaylses uploaded images and determine if they is a fire within the image ###
-
-
 @app.post("/analyze", status_code=200)
 async def analyseUploadedImage(file: UploadFile = File(...)):
     try:
@@ -150,8 +144,6 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
 
 ### returns all past results predict results and their accuracy score ###
-
-
 @app.get("/results", status_code=200)
 def getAllResults():
     """ """
