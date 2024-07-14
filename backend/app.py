@@ -59,6 +59,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 app = FastAPI()
 
+
 class Image(BaseModel):
     """ """
 
@@ -134,14 +135,13 @@ def getAllResults():
             detection_result = f"Smoke ({result.smoke * 100:.2f}%)"
         else:
             detection_result = "No detection"
-        
+
         response.append({
             "id": result.id,
             "filename": result.filename,
             "result": detection_result
         })
     return response
-
 
 
 @app.get("/test", status_code=200)
