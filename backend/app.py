@@ -117,6 +117,7 @@ async def analyseUploadedImage(file: UploadFile = File(...)):
 
 @app.get("/getAllResults", response_model=List[Image], status_code=200)
 def getAllResults():
+    """ """
     db = SessionLocal()
     results = db.query(Result).all()
     response = []
